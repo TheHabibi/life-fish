@@ -1,12 +1,13 @@
 const asyncHandler = require('express-async-handler')
 
 const Fish = require('../models/fishModel')
+const User = require('../models/userModel')
 
 // @desc Get fishes
 // @route GET /api/fishes
 // @access Private
 const getFishes = asyncHandler(async(req,res) => {
-    const fishes = await Fish.find()
+    const fishes = await Fish.find({ user: req.user.id })
 
     res.status(200).json({fishes})
 })
@@ -21,11 +22,16 @@ const setFish = asyncHandler(async(req,res) => {
       }
 
       const fish = await Fish.create({
-        text: req.body.text
+        text: req.body.text,
+        user: req.user.id
       })
 
     res.status(200).json(fish)
 })
+
+
+
+
 
 // @desc Update fish
 // @route PUT /api/fishes/:id
@@ -36,6 +42,20 @@ const updateFish = asyncHandler(async(req,res) => {
     if(!fish){
         res.status(400)
         throw new Error('Fish not found')
+    }
+
+    const user = await User.findById(req.user.id)
+
+    //Check for user
+    if(!user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged in user matches the goal user
+    if(fish.user.toString() !== user.id){
+        res.status(401)
+        throw new Error('User not authorized')
     }
     
     const updatedFish = await Fish.findByIdAndUpdate(req.params.id, req.body, {new: true,
@@ -54,6 +74,21 @@ const deleteFish = asyncHandler(async(req,res) => {
         res.status(400)
         throw new Error('Fish not found')
     }
+
+    const user = await User.findById(req.user.id)
+
+    //Check for user
+    if(!user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged in user matches the goal user
+    if(fish.user.toString() !== user.id){
+        res.status(401)
+        throw new Error('User not authorized')
+    }
+
     await Fish.remove()
 
     res.status(200).json({ id: req.params.id })
