@@ -99,10 +99,11 @@ h3 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+ 
 }
 
 .goal {
-  background-color: #f4f4f4;
+  background-color: aquamarine;
   margin: 10px 0;
   padding: 20px 0 10px;
   position: relative;

@@ -44,16 +44,16 @@ const updateFish = asyncHandler(async(req,res) => {
         throw new Error('Fish not found')
     }
 
-    const user = await User.findById(req.user.id)
+
 
     //Check for user
-    if(!user) {
+    if(!req.user) {
         res.status(401)
         throw new Error('User not found')
     }
 
     // Make sure the logged in user matches the goal user
-    if(fish.user.toString() !== user.id){
+    if(fish.user.toString() !== req.user.id){
         res.status(401)
         throw new Error('User not authorized')
     }
@@ -75,21 +75,21 @@ const deleteFish = asyncHandler(async(req,res) => {
         throw new Error('Fish not found')
     }
 
-    const user = await User.findById(req.user.id)
+  
 
     //Check for user
-    if(!user) {
+    if(!req.user) {
         res.status(401)
         throw new Error('User not found')
     }
 
     // Make sure the logged in user matches the goal user
-    if(fish.user.toString() !== user.id){
+    if(fish.user.toString() !== req.user.id){
         res.status(401)
         throw new Error('User not authorized')
     }
 
-    await Fish.remove()
+    await Fish.deleteOne()
 
     res.status(200).json({ id: req.params.id })
 })
