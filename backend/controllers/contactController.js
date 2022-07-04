@@ -1,34 +1,33 @@
 const asyncHandler = require('express-async-handler')
 
-const Fish = require('../models/fishModel')
+const Contact = require('../models/contactModel')
 const User = require('../models/userModel')
 
 // @desc Get fishes
 // @route GET /api/fishes
 // @access Private
-const getFishes = asyncHandler(async(req,res) => {
+const getContacts = asyncHandler(async(req,res) => {
+   
+    const contacts = await Contact.find({ user: req.user.id })
 
-    console.log(req.user)
-    const fishes = await Fish.find({ user: req.user.id })
-
-    res.status(200).json({fishes})
+    res.status(200).json({contacts})
 })
 
 // @desc Set fish
 // @route POST /api/fishes
 // @access Private
-const setFish = asyncHandler(async(req,res) => {
-    if (!req.body.text) {
+const setContact = asyncHandler(async(req,res) => {
+    if (!req.body.mail) {
         res.status(400)
         throw new Error('Please add a text field')
       }
 
-      const fish = await Fish.create({
-        text: req.body.text,
+      const contact = await Contact.create({
+        mail: req.body.mail,
         user: req.user.id
       })
 
-    res.status(200).json(fish)
+    res.status(200).json(contact)
 })
 
 
@@ -38,13 +37,15 @@ const setFish = asyncHandler(async(req,res) => {
 // @desc Update fish
 // @route PUT /api/fishes/:id
 // @access Private
-const updateFish = asyncHandler(async(req,res) => {
-    const fish = await Fish.findById(req.params.id)
+const updateContact = asyncHandler(async(req,res) => {
+    const contact = await Contact.findById(req.params.id)
   
-    if(!fish){
+    if(!contact){
         res.status(400)
-        throw new Error('Fish not found')
+        throw new Error('Contact not found')
     }
+
+
 
     //Check for user
     if(!req.user) {
@@ -53,26 +54,26 @@ const updateFish = asyncHandler(async(req,res) => {
     }
 
     // Make sure the logged in user matches the goal user
-    if(fish.user.toString() !== req.user.id){
+    if(contact.user.toString() !== req.user.id){
         res.status(401)
         throw new Error('User not authorized')
     }
     
-    const updatedFish = await Fish.findByIdAndUpdate(req.params.id, req.body, {new: true,
+    const updatedContact = await Contact.findByIdAndUpdate(req.params.id, req.body, {new: true,
     })
 
-    res.status(200).json(updatedFish)
+    res.status(200).json(updatedContact)
 })
 
 // @desc Delete fish
 // @route DELETE /api/fishes/:id
 // @access Private
-const deleteFish = asyncHandler(async(req,res) => {
-    const fish = await Fish.findById(req.params.id)
+const deleteContact = asyncHandler(async(req,res) => {
+    const contact = await Contact.findById(req.params.id)
 
-    if(!fish){
+    if(!contact){
         res.status(400)
-        throw new Error('Fish not found')
+        throw new Error('Contact not found')
     }
 
   
@@ -84,19 +85,19 @@ const deleteFish = asyncHandler(async(req,res) => {
     }
 
     // Make sure the logged in user matches the goal user
-    if(fish.user.toString() !== req.user.id){
+    if(contact.user.toString() !== req.user.id){
         res.status(401)
         throw new Error('User not authorized')
     }
 
-    await Fish.deleteOne()
+    await Contact.deleteOne()
 
     res.status(200).json({ id: req.params.id })
 })
 
 module.exports = {
-    getFishes,
-    setFish,
-    updateFish,
-    deleteFish
+    getContacts,
+    setContact,
+    updateContact,
+    deleteContact
 }

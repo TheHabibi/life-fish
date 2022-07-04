@@ -1,19 +1,18 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import FishForm from '../components/FishForm'
 import ContactForm from '../components/ContactForm'
-import FishItem from '../components/FishItem'
+import ContactCard from '../components/ContactCard'
 import Spinner from '../components/Spinner'
-import { getFishes, reset } from '../features/fishes/fishSlice'
+import { getContacts, reset } from '../features/contacts/contactSlice'
 
 function Dashboard() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const { user } = useSelector((state) => state.auth)
-  const { fishes, isLoading, isError, message } = useSelector(
-    (state) => state.fishes)
+  const { contacts, isLoading, isError, message } = useSelector(
+    (state) => state.contacts)
   
 
 
@@ -26,7 +25,7 @@ function Dashboard() {
       navigate('/login')
     }
 
-    dispatch(getFishes())
+    dispatch(getContacts())
 
     return () => {
       dispatch(reset())
@@ -40,25 +39,25 @@ function Dashboard() {
   return (
     <>
       <section className='heading'>
-        <h1>Welcome {user && user.name}</h1>
-        <p>Fishes Dashboard</p>
+        <h1>Here are your contacts that you want to inform {user && user.name}</h1>
+        <p>Contacts</p>
       </section>
 
+      <ContactForm />
       
-      <FishForm />
 
-      <section className='content'>
-        {fishes && fishes.fishes && fishes.fishes.length > 0 ? (
+   <ul>
+      {contacts && contacts.contacts && contacts.contacts.length > 0 ? (
           <div className='goals'>
-            {fishes.fishes.map((fish) => (
-              <FishItem key={fish._id} fish={fish} />
+            {contacts.contacts.map((contact) => (
+              <ContactCard key={contact._id} contact={contact} />
             ))}
       
           </div>
         ) : (
           <h3>You have not set any fishes</h3>
         )}
-      </section>
+     </ul>
     </>
   )
 }
